@@ -4,14 +4,13 @@ classdef GlobalParams
     
     properties(Constant)
         physicsTimeDelta = 1e-5;
-        totalLoops = 2e5;
-        systemTimeDelta = 1e-5;
+        totalLoops = 2e5;        
     end
     
     properties(Constant)
         shaftToMotorRatio = 74.83;
-        encoderToMotorRatio = 48/4;
-        noLoadMotorMaxSpeedRadPerSecond = 9727.9*pi/30;
+        encoderClicksPerMotorRotation = 48;
+        noLoadMotorMaxSpeedRPS = 162.5;
     end
     
     methods

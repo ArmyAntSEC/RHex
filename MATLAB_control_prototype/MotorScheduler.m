@@ -1,29 +1,29 @@
 classdef MotorScheduler    
     properties
-        wantedPositionLog;
+        wantedShaftPositionRevLog;
     end
     
     methods
         function obj = MotorScheduler()
-            obj.wantedPositionLog = TraceLogMat;
+            obj.wantedShaftPositionRevLog = TraceLogMat;
         end
     end
     
     methods
-        function wantedPos = getWantedPos(obj,systemTime)
+        function wantedShaftPosRev = getWantedShaftPosRev(obj,systemTime)
             loopTime = 1; %s
             locationInLoop = rem(systemTime,loopTime);
             
-            % Should spend half of time between 0 and 0.3 rad
+            % Should spend half of time between 0 and 0.1 rev
             if ( locationInLoop < 0.5 )
-                wantedPos = (locationInLoop*2)*0.3;
+                wantedShaftPosRev = (locationInLoop*2)*0.1;
             else
-                wantedPos = 0.3 + ((locationInLoop - 0.5)*2)*(2*pi-0.3);
+                wantedShaftPosRev = 0.1 + ((locationInLoop - 0.5)*2)*(1-0.1);
             end
             
-            wantedPos = wantedPos + 2*pi*floor(systemTime/loopTime);
+            wantedShaftPosRev = wantedShaftPosRev + floor(systemTime/loopTime);
             
-            obj.wantedPositionLog.append( wantedPos );
+            obj.wantedShaftPositionRevLog.append( wantedShaftPosRev );
         end
     end
 end

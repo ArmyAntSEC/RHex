@@ -8,13 +8,9 @@ systemModel = SystemModel();
 
 %% Start the loop
 t = tic;
-
 for ii = 1:GlobalParams.totalLoops                                   
-    physicsModel.step();   
-    
-    if ( rem(ii, 10) == 0 )
-        systemModel.step(physicsModel);
-    end
+    physicsModel.step();           
+    systemModel.step(physicsModel);    
 end
 
 endTime = toc(t);
@@ -22,23 +18,23 @@ fprintf ( "Time to run: %0.2fs. Loops/s: %0.2f.\n", endTime, GlobalParams.totalL
 
 %% Plot data of interest
 physicsTimeScale = (1:GlobalParams.totalLoops)*GlobalParams.physicsTimeDelta;
-systemTimeScale = (1:(GlobalParams.totalLoops/10))*GlobalParams.systemTimeDelta;
 
-subplot ( 2,2,1)
-title ( 'Motor actual position [rad]' )
-plot ( physicsTimeScale, physicsModel.engineOne.motorPositionRadLog.data/(2*pi) );
+ax1 = subplot ( 2,2,1);
+plot ( physicsTimeScale, physicsModel.engineOne.motorPositionRevLog.data/GlobalParams.shaftToMotorRatio, '-', ...
+    physicsTimeScale, systemModel.encoderReaderOne.lastMotorPositionRevLog.data/GlobalParams.shaftToMotorRatio, '.-', ...
+    physicsTimeScale, systemModel.encoderReaderOne.lastMotorPositionRevFilteredLog.data/GlobalParams.shaftToMotorRatio, '.-',...
+    physicsTimeScale(1:10:end), systemModel.motorScheduler.wantedShaftPositionRevLog.data, '--');
+title ( 'Actual and Encoder measured shaft position [rev]' );
 
-subplot ( 2,2,2)
+ax2 = subplot ( 2,2,2);
+plot ( physicsTimeScale, physicsModel.engineOne.inputPWMLog.data, '.-' );
 title ( 'Driver input PWM value' );
-plot ( physicsTimeScale, physicsModel.engineOne.inputPWMLog.data );
 
-subplot ( 2,2,3)
-title ( 'Encoder output' );
+ax3 = subplot ( 2,2,3);
 plot ( physicsTimeScale, physicsModel.engineOne.encoderOutputOneLog.data, ...
     physicsTimeScale, physicsModel.engineOne.encoderOutputTwoLog.data );
+title ( 'Encoder output' );
 
-subplot ( 2,2,4)
-title ( 'Encoder measured position' );
-plot ( systemTimeScale, systemModel.encoderReaderOne.lastPositionLog.data, '.-', ...
-    systemTimeScale, systemModel.encoderReaderOne.lastPositionFilteredLog.data, '.-', ...
-    systemTimeScale, systemModel.motorScheduler.wantedPositionLog.data, '--' )
+
+linkaxes( [ax1 ax2 ax3], 'x' );
+

@@ -25,15 +25,18 @@ classdef SystemModel<handle
             encoderValueTwo = physicsModel.engineOne.encoderOutputTwo;
             obj.encoderReaderOne.step( encoderValueOne, encoderValueTwo );
             
-            % Read the wanted position
-            systemClock = physicsModel.systemClock;
-            wantedPosition = obj.motorScheduler.getWantedPos( systemClock );
-            
-            %Regulate the motor power
-            motorPosition = obj.encoderReaderOne.getPosition();
-            pwm = obj.motorRegulator.step(motorPosition, wantedPosition);
-            physicsModel.engineOne.setInputPWM( pwm );
-            
+            % Only run regulator every 10 iterations to save processor
+            % power.
+            if ( rem( obj.stepCount, 10 ) == 0 )
+                % Read the wanted position
+                systemClock = physicsModel.systemClock;
+                wantedShaftPosition = obj.motorScheduler.getWantedShaftPosRev( systemClock );
+                
+                %Regulate the motor power
+                shaftPosition = obj.encoderReaderOne.getShaftPositionRev();
+                pwm = obj.motorRegulator.step(shaftPosition, wantedShaftPosition);
+                physicsModel.engineOne.setInputPWM( pwm );
+            end
             
         end
     end

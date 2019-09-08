@@ -6,24 +6,24 @@ classdef EncoderReader<handle
     properties(Access=private)
         lastValueOne;
         lastValueTwo;
-        lastPosition;         
+        lastMotorPositionRev;         
         
-        lastPositionFiltered;
+        lastMotorPositionRevFiltered;        
         
         transitionsMatrix                
     end
     
     properties
-        lastPositionLog; 
-        lastPositionFilteredLog;
+        lastMotorPositionRevLog; 
+        lastMotorPositionRevFilteredLog;
     end
     
     methods
         function obj = EncoderReader()
             obj.lastValueOne = 0;
             obj.lastValueTwo = 1;
-            obj.lastPosition = 0;
-            obj.lastPositionFiltered = 0;
+            obj.lastMotorPositionRev = 0;
+            obj.lastMotorPositionRevFiltered = 0;
             
             obj.transitionsMatrix = zeros(2,2,2,2);
             obj.transitionsMatrix(2,2,1,2) = 1;
@@ -35,31 +35,31 @@ classdef EncoderReader<handle
             obj.transitionsMatrix(1,1,1,2) = -1;
             obj.transitionsMatrix(1,2,2,2) = -1;
             
-            obj.lastPositionLog = TraceLogMat;
-            obj.lastPositionFilteredLog = TraceLogMat;
+            obj.lastMotorPositionRevLog = TraceLogMat;
+            obj.lastMotorPositionRevFilteredLog = TraceLogMat;
         end
         
         function step(obj,valueOne,valueTwo)
             stepDir = -obj.transitionsMatrix( ...
                 obj.lastValueOne+1, obj.lastValueTwo+1, ...
                 valueOne+1, valueTwo+1 );
-            stepAngleRad = stepDir / GlobalParams.encoderToMotorRatio/(2*pi);           
+            stepRevFraction = stepDir / GlobalParams.encoderClicksPerMotorRotation;
             
             obj.lastValueOne = valueOne;
             obj.lastValueTwo = valueTwo;
             
-            obj.lastPosition = obj.lastPosition + stepAngleRad;
-            obj.lastPositionFiltered = ...
-                (obj.lastPositionFiltered*(EncoderReader.filterConstant-1) + ...
-                obj.lastPosition) / EncoderReader.filterConstant;
+            obj.lastMotorPositionRev = obj.lastMotorPositionRev + stepRevFraction;
+            obj.lastMotorPositionRevFiltered = ...
+                (obj.lastMotorPositionRevFiltered*(EncoderReader.filterConstant-1) + ...
+                obj.lastMotorPositionRev) / EncoderReader.filterConstant;
           
             
-            obj.lastPositionLog.append( obj.lastPosition );
-            obj.lastPositionFilteredLog.append( obj.lastPositionFiltered );
+            obj.lastMotorPositionRevLog.append( obj.lastMotorPositionRev );
+            obj.lastMotorPositionRevFilteredLog.append( obj.lastMotorPositionRevFiltered );
         end
         
-        function pos = getPosition(obj)
-            pos = obj.lastPositionFiltered;
+        function pos = getShaftPositionRev(obj)
+            pos = obj.lastMotorPositionRevFiltered/GlobalParams.shaftToMotorRatio;
         end
     end
 end

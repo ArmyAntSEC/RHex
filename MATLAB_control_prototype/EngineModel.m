@@ -1,14 +1,14 @@
 classdef EngineModel<handle
     
     properties(SetAccess=private)
-        motorPositionRad;
-        shaftPositionRad; 
+        motorPositionRev;
+        shaftPositionRev; 
         encoderOutputOne;
         encoderOutputTwo;
         inputPWM;
         
-        motorPositionRadLog;
-        shaftPositionRadLog; 
+        motorPositionRevLog;
+        shaftPositionRevLog; 
         encoderOutputOneLog;
         encoderOutputTwoLog;
         inputPWMLog;
@@ -16,28 +16,28 @@ classdef EngineModel<handle
     
     methods
         function obj = EngineModel()
-            obj.motorPositionRad = 0;
-            obj.shaftPositionRad = 0;
+            obj.motorPositionRev = 0;
+            obj.shaftPositionRev = 0;
             obj.encoderOutputOne = 0;
             obj.encoderOutputTwo = 0;
             obj.inputPWM = 0;      
             
-            obj.motorPositionRadLog = TraceLogMat();
-            obj.shaftPositionRadLog = TraceLogMat(); 
+            obj.motorPositionRevLog = TraceLogMat();
+            obj.shaftPositionRevLog = TraceLogMat(); 
             obj.encoderOutputOneLog = TraceLogMat();
             obj.encoderOutputTwoLog = TraceLogMat();
             obj.inputPWMLog = TraceLogMat();
         end
         
         function step(obj)
-            motorSpeedRadPerSecond = GlobalParams.noLoadMotorMaxSpeedRadPerSecond * obj.inputPWM/256;
-            obj.motorPositionRad = obj.motorPositionRad + GlobalParams.physicsTimeDelta*motorSpeedRadPerSecond;
-            obj.shaftPositionRad = obj.motorPositionRad / GlobalParams.shaftToMotorRatio;
-            obj.encoderOutputOne = sin(obj.motorPositionRad*GlobalParams.encoderToMotorRatio)>0;
-            obj.encoderOutputTwo = cos(obj.motorPositionRad*GlobalParams.encoderToMotorRatio)>0;            
+            motorSpeedRPS = GlobalParams.noLoadMotorMaxSpeedRPS * obj.inputPWM/256;
+            obj.motorPositionRev = obj.motorPositionRev + GlobalParams.physicsTimeDelta*motorSpeedRPS;
+            obj.shaftPositionRev = obj.motorPositionRev / GlobalParams.shaftToMotorRatio;
+            obj.encoderOutputOne = sin(obj.motorPositionRev*GlobalParams.encoderClicksPerMotorRotation*2*pi/4)>0;
+            obj.encoderOutputTwo = cos(obj.motorPositionRev*GlobalParams.encoderClicksPerMotorRotation*2*pi/4)>0;            
 
-            obj.motorPositionRadLog.append( obj.motorPositionRad );
-            obj.shaftPositionRadLog.append( obj.shaftPositionRad );
+            obj.motorPositionRevLog.append( obj.motorPositionRev );
+            obj.shaftPositionRevLog.append( obj.shaftPositionRev );
             obj.encoderOutputOneLog.append( obj.encoderOutputOne );
             obj.encoderOutputTwoLog.append( obj.encoderOutputTwo );
             obj.inputPWMLog.append( obj.inputPWM );

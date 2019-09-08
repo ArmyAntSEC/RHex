@@ -1,7 +1,7 @@
 classdef MotorRegulator<handle
     
     properties(Constant)
-        P = 100;
+        P = 10000;
         D = 0;
         Fmax = 255;
         Fmin = -255;
