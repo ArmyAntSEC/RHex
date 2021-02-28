@@ -27,7 +27,7 @@ board.writeDigitalPin( pins.MOTOR_EN2, 0 );
 encoder = board.rotaryEncoder( pins.ENCODER_1, pins.ENCODER_2 );
 
 %% Do the thing
-speeds = repmat(64:32:256,1,50);
+speeds = repmat(64:32:256,1,2);
 data = nan(20,2,numel(speeds));
 
 for ii = 1:numel(speeds)
@@ -55,7 +55,8 @@ plot ( speeds, drift, '.', [0 speeds(1:7)], polyval(pc, [0 speeds(1:7)]), '-' )
 ax = axis;
 axis( [0 ax(2) 0 ax(4)] );
 
-
+%% Result
+pcStored = [-0.0077 5.8579 -275.3214];
 
 
 
