@@ -4,7 +4,7 @@ clc;
 
 %% Init the interface
 clear ( 'board' );
-board = arduino();
+board = arduino('COM4','Uno','Libraries','rotaryEncoder');
 disp ( board );
 
 %% Pin mapping
@@ -24,33 +24,44 @@ board.configurePin( pins.MOTOR_PWM, 'PWM' );
 board.writeDigitalPin( pins.MOTOR_EN1, 1 );
 board.writeDigitalPin( pins.MOTOR_EN2, 0 );
 
-encoder = board.rotaryEncoder( pins.ENCODER_1, pins.ENCODER_2 );
+encoder = board.rotaryEncoder( pins.ENCODER_1, pins.ENCODER_2,  3592/4 );
 
-%% Move exactly one revolution
-encoder.resetCount();
-pcStored = [-0.0077 5.8579 -275.3214];
-speed = 64;
-drift = polyval( pcStored, speed );
-board.writePWMDutyCycle( pins.MOTOR_PWM, speed/256 );
-while ( encoder.readCount() < 48*74.83*0.92 - drift )
-    pause(0.1);
+%% Move a bit 
+len = 100;
+powerLog = nan(len,1);
+speedLog = powerLog;
+timeLog = powerLog;
+
+P = 6;
+D = 2*0;
+Input = 0;
+Output = 0;
+Setpoint = 100;
+lastInput = 0;
+
+tic;
+for ii = 1:30
+    time = toc;
+    Input = encoder.readSpeed();
+    Error = Setpoint - Input;
+    dInput = Input - lastInput;
     
+    Output = P*Error + D*dInput;
+    
+    Output = min(max(0,Output),255);
+    board.writePWMDutyCycle( pins.MOTOR_PWM, Output/256 );
+    speedLog(ii) = Input;
+    powerLog(ii) = Output;
+    timeLog(ii) = time;    
+    fprintf ( '.' );
 end
-disp ( encoder.readCount() );
-board.writePWMDutyCycle( pins.MOTOR_PWM, 0 );
+fprintf ( '\n' );
 
+board.writePWMDutyCycle( pins.MOTOR_PWM, 0 );
 %%
-encoder.resetCount();
-pcStored = [-0.0077 5.8579 -275.3214];
-speed = 64;
-drift = polyval( pcStored, speed );
-board.writePWMDutyCycle( pins.MOTOR_PWM, speed/256 );
-while ( board.readDigitalPin( pins.OPTO ) == 1)
-    pause(0.01);    
-end
-board.writePWMDutyCycle( pins.MOTOR_PWM, 0 );
-disp ( encoder.readCount() );
-
-    
-
-
+subplot ( 2, 1, 1 );
+plot ( timeLog, speedLog, timeLog, Setpoint*ones(size(timeLog)) );
+title ( 'Speed' );
+subplot ( 2, 1, 2 );
+plot ( timeLog, powerLog );
+title ( 'Power' );
