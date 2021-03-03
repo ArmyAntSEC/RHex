@@ -1,4 +1,5 @@
 %% Lock and load
+% http://brettbeauregard.com/blog/2011/04/improving-the-beginner%e2%80%99s-pid-derivative-kick/
 clear;
 clc;
 
@@ -27,24 +28,25 @@ board.writeDigitalPin( pins.MOTOR_EN2, 0 );
 encoder = board.rotaryEncoder( pins.ENCODER_1, pins.ENCODER_2,  3592/4 );
 
 %% Move a bit 
-len = 100;
+len = 50;
 powerLog = nan(len,1);
 speedLog = powerLog;
 timeLog = powerLog;
 
 P = 6;
-D = 2*0;
+D = 2;
 Input = 0;
 Output = 0;
-Setpoint = 100;
+Setpoint = 20;
 lastInput = 0;
 
 tic;
-for ii = 1:30
+for ii = 1:len
     time = toc;
     Input = encoder.readSpeed();
     Error = Setpoint - Input;
     dInput = Input - lastInput;
+    lastInput = dInput;
     
     Output = P*Error + D*dInput;
     
