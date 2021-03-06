@@ -6,7 +6,7 @@ clc;
 dev = serialport ( 'COM4', 115200 ); 
 dev.configureTerminator( 'CR' );
 pause(2);
-targetSpeed = 5000;
+targetSpeed = 8000;
 dev.write ( [0.5 0 2 targetSpeed], 'single' );
 
 %% Load the data
@@ -22,7 +22,7 @@ data.Time = (1:height(data))'*0.01;
 
 %% Now look at the data
 subplot ( 3, 1, 1 );
-plot ( data.Time, data.Speed, [0 max(data.Time)], targetSpeed*[1 1] );
+plot ( data.Time, data.Speed, [0 1 1 max(data.Time)], targetSpeed*[1 1 0.5 0.5] );
 title ( 'Speed' );
 subplot ( 3, 1, 2 );
 plot ( data.Time, data.Power, data.Time(1:end-1), diff(data.Speed)/5 );
