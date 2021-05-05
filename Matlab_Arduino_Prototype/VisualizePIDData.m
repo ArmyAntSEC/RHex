@@ -7,7 +7,7 @@ dev = serialport ( 'COM4', 115200 );
 dev.configureTerminator( 'CR' );
 pause(2);
 targetSpeed = 7000;
-dev.write ( [0.5 0 2 targetSpeed], 'single' );
+dev.write ( [0 1000], 'single' );
 
 %% Wait
 pause(5);
