@@ -23,7 +23,7 @@ def mainFunc():
             print ( "Doing a simple move" ); 
             driver1.setMotorPWM(0.5)
             sleep(1)
-            driver1.setMotorPWM(0)
+            driver1.setMotorPWM(0)            
             print ( "Done with simple move" ); 
         else:
             print ( "Unknown command: ", command )
