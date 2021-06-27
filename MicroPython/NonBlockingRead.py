@@ -9,7 +9,7 @@ class NonBlockingRead:
     def __call__(self):             
         if ( self.spoll.poll(0) ):                        
             self.buffer = self.buffer + str(sys.stdin.read(1))
-            print ( ":> " + self.buffer )
+            print ( ":> " + self.buffer ) 
 
 
 
