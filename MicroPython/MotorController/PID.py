@@ -7,14 +7,15 @@ class PID(object):
         self.setPoint = setPoint
         self.outputLimits = outputLimits
         self.dT = dT
+        self.error = 0
 
     def __call__(self, input):
         
         # Compute error terms
-        error = self.setPoint - input        
+        self.error = self.setPoint - input        
 
         # Regular proportional-on-error, simply set the proportional term
-        self.proportional = self.Kp * error
+        self.proportional = self.Kp * self.error
 
         # Compute final output
         output = self.proportional

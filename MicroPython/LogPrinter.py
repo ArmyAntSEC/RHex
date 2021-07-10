@@ -6,8 +6,8 @@ class LogPrinterClass:
         self.startTime_ms = ticks_ms()
 
     def __call__( self, *arg ):
-        print ( "[" + str(ticks_diff(ticks_ms(), self.startTime_ms)) + "] ", *arg )
-
+        print ( "[" + str(ticks_diff(ticks_ms(), self.startTime_ms)) + "] ", *arg )        
+        
 logPrinter = LogPrinterClass()
 
 def LogPrinter( *arg ):

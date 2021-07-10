@@ -9,6 +9,7 @@ from TaskScheduler.IRecurringTask import IRecurringTask
 from TaskScheduler.IFutureTask import IFutureTask
 from NonBlockingRead import NonBlockingRead
 from LogPrinter import LogPrinter
+from NumericOutput import NumericOutput
 
 class Beacon(IRecurringTask):
     def __init__(self):
@@ -18,9 +19,10 @@ class Beacon(IRecurringTask):
         LogPrinter ( "Beacon!" )
 
 class mainFunc:
-    def __init__( self ):
-        LogPrinter ( "Hello Again World!" )    
-            
+    def __init__( self ):                    
+        num = NumericOutput( "hello" )
+        num( (1, 2) )
+
         m1ena = Pin(3, Pin.OUT )
         m1enb = Pin(4, Pin.OUT )
         m1pwm = PWM(Pin(5))

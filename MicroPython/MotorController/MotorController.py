@@ -3,6 +3,7 @@ from MotorController.PID import PID
 from HomingEncoder.HomingEncoder import HomingEncoder
 from TaskScheduler.IRecurringTask import IRecurringTask
 from LogPrinter import LogPrinter
+from NumericOutput import NumericOutput
 
 class MotorController ( IRecurringTask ):
     def config(self, motorDriver: MotorDriver, homingEncoder: HomingEncoder, 
@@ -11,6 +12,8 @@ class MotorController ( IRecurringTask ):
         self.homingEncoder = homingEncoder
         self.pid = PID(Kp=P)        
         self.enabled = False
+        self.output = NumericOutput("controller")
+        self.output.printHeaders( ("speed", "error", "motorPWM") )
         
     def setPoint( self, setPoint ):
         self.pid.setPoint = setPoint
@@ -27,6 +30,6 @@ class MotorController ( IRecurringTask ):
             if ( motorPWM is None ):
                 motorPWM = 0
             self.motorDriver.setMotorPWM( motorPWM )
-            LogPrinter ( "Speed: ", self.homingEncoder.speed_cps , " Power: ", motorPWM )
+            self.output( (self.homingEncoder.speed_cps, self.pid.error, motorPWM) )
 
 
