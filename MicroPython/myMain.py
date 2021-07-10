@@ -4,7 +4,13 @@ from machine import PWM
 from sys import exit
 import utime
 from TaskScheduler.TaskScheduler import TackScheduler
+from TaskScheduler.IRecurringTask import IRecurringTask
+from TaskScheduler.IFutureTask import IFutureTask
 from NonBlockingRead import NonBlockingRead
+
+class Beacon(IRecurringTask):
+    def run( self ):
+        print ( "Time: " , utime.ticks_us() )
 
 class mainFunc:
     def __init__( self ):
@@ -19,6 +25,7 @@ class mainFunc:
         self.driver1.config ( m1ena, m1enb, m1pwm )
 
         self.taskScheduler = TackScheduler()   
+        self.taskScheduler.addTask( Beacon(1000000) )
         
         self.commands = {
             "info": self.cmdInfo,
@@ -56,10 +63,12 @@ class mainFunc:
     
     def cmdSimpleMove(self):
         print ( "Doing a simple move" ); 
-        self.driver1.setMotorPWM(0.5)
-        utime.sleep(1) #NOT ALLOWED. MUST RETURN IMMEDIATELY
-        self.driver1.setMotorPWM(0)            
-        print ( "Done with simple move" ); 
+        self.driver1.setMotorPWM(0.5)                
+        
+        def stopFun():
+            self.driver1.setMotorPWM(0)            
+            print ( "Done with simple move" );         
+        self.taskScheduler.addTask( IFutureTask(1000,stopFun,self.taskScheduler) )
 
     def cmdStats(self):
         self.taskScheduler.printStats()

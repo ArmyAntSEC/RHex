@@ -1,4 +1,4 @@
-from TaskScheduler.IRecurringTask import IRecurringTask
+from Scheduler.IRecurringTask import IRecurringTask
 import utime
 from math import sqrt
 
@@ -13,9 +13,6 @@ class TackScheduler:
     def addTask( self, task: IRecurringTask ):
         self.tasks.append( task )
     
-    def deleteTask( self, task: IRecurringTask ):
-        self.tasks.remove( task )
-
     def run(self):
         # Compute the call frequency statistics
         thisTime_us = utime.ticks_us()
@@ -26,9 +23,8 @@ class TackScheduler:
         self.callCount = self.callCount + 1
 
         for task in self.tasks:
-            if ( task.canRun() ):                
+            if ( task.canRun() ):
                 task.run()
-        
 
     def printStats(self):    
         print ( "Mean time between calls: ", "{:.2f}".format( self.intervalMean/1000 ), 
