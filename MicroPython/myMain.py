@@ -67,7 +67,7 @@ class mainFunc:
     
     def cmdSimpleMove(self):
         LogPrinter ( "Doing a simple move" ); 
-        self.driver1.setMotorPWM(0.5)                
+        self.driver1.setMotorPWM(0.25)                
         
         def stopFun():
             self.driver1.setMotorPWM(0)            
@@ -78,6 +78,7 @@ class mainFunc:
         self.taskScheduler.printStats()
 
     def cmdExit(self):
+        self.driver1.setMotorPWM(0)
         exit()
 
 mainFunc()

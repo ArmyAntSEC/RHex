@@ -38,6 +38,6 @@ m1ena.value(0)
 m1enb.value(1)
 m1pwm.freq(500)
 
-m1pwm.duty_u16( 32000 )
-utime.sleep(2)
+m1pwm.duty_u16( 16000 )
+utime.sleep(3)
 m1pwm.duty_u16( 0 )
