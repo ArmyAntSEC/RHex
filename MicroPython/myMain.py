@@ -1,52 +1,59 @@
 from MotorController.MotorDriver import MotorDriver
 from machine import Pin
 from machine import PWM
+from sys import exit
 import utime
 from TaskScheduler.TaskScheduler import TackScheduler
 from NonBlockingRead import NonBlockingRead
 
-#import sys,uselect
-#poll=uselect.poll()
-#spoll.register(sys.stdin,uselect.POLLIN)
-#def read1():
-#    #return(sys.stdin.read(1) if spoll.poll(0) else None)
-#    print ( "Anyting?" )
-#    if ( spoll.poll(0) ):
-#        print ( "Got one: ", sys.stdin.read(1) )
+class mainFunc:
+    def __init__( self ):
+        print ( "Hello Again World!" )    
+            
+        m1ena = Pin(3, Pin.OUT )
+        m1enb = Pin(4, Pin.OUT )
+        m1pwm = PWM(Pin(5))
+        m1pwm.freq(1000)    
 
-    
-def mainFunc(): 
-    print ( "Hello Again World!" )    
+        self.driver1 = MotorDriver()
+        self.driver1.config ( m1ena, m1enb, m1pwm )
 
-    reader = NonBlockingRead()
-
-    while True:        
-        reader()
+        self.taskScheduler = TackScheduler()   
         
-    m1ena = Pin(3, Pin.OUT )
-    m1enb = Pin(4, Pin.OUT )
-    m1pwm = PWM(Pin(5))
-    m1pwm.freq(1000)    
+        # Start the infitine loop
+        self.run()
 
-    driver1 = MotorDriver()
-    driver1.config ( m1ena, m1enb, m1pwm )
 
-    taskScheduler = TackScheduler()        
+    def commandParser( self, command: str ):
+        """Parses a single input command. Should return immediately"""
 
-    while True:
-        taskScheduler.run()
-
-        command = input ( "$ " )    
-        
         if ( command == "info" ):        
             print ( "This is the info" )
+
         elif ( command == "simpleMove" ):
             print ( "Doing a simple move" ); 
-            driver1.setMotorPWM(0.5)
-            sleep(1)
-            driver1.setMotorPWM(0)            
+            self.driver1.setMotorPWM(0.5)
+            #sleep(1)
+            self.driver1.setMotorPWM(0)            
             print ( "Done with simple move" ); 
+        
+        elif ( command == "stats" ):
+            self.taskScheduler.printStats()
+
+        elif ( command == "exit" ):
+            # Exit the program
+            exit()
         else:
             print ( "Unknown command: ", command )
+
+
+    def run(self): 
+        print ( "Running loop" )
+        reader = NonBlockingRead( self.commandParser )
+
+        while True:        
+            reader()
+            self.taskScheduler.run()            
+
 
 mainFunc()
