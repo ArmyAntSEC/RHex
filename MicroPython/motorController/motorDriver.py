@@ -1,7 +1,7 @@
 from LogPrinter import LogPrinter
 
 class MotorDriver:
-    def __init__(self, pinEnable1, pinEnable2, pinPwm ):
+    def config(self, pinEnable1, pinEnable2, pinPwm ):
         self.pinEnable1 = pinEnable1
         self.pinEnable2 = pinEnable2
         self.pinPwm = pinPwm
