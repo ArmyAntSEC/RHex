@@ -1,8 +1,9 @@
 from MotorController.MotorDriver import MotorDriver
+from MotorController.MotorController import MotorController
+from HomingEncoder.HomingEncoder import HomingEncoder
 from machine import Pin
 from machine import PWM
 from sys import exit
-import utime
 from TaskScheduler.TaskScheduler import TackScheduler
 from TaskScheduler.IRecurringTask import IRecurringTask
 from TaskScheduler.IFutureTask import IFutureTask
@@ -25,11 +26,17 @@ class mainFunc:
         m1pwm = PWM(Pin(5))
         m1pwm.freq(1000)    
 
-        self.driver1 = MotorDriver()
-        self.driver1.config ( m1ena, m1enb, m1pwm )
+        self.driver1 = MotorDriver(m1ena, m1enb, m1pwm )        
 
+        self.homingEncoder1 = HomingEncoder()
+        self.homingEncoder1.config(6,7,28)
+
+        self.controller1 = MotorController(10000)
+        self.controller1.config( self.driver1, self.homingEncoder1, 100, 0, 0)
+        
         self.taskScheduler = TackScheduler()   
         self.taskScheduler.addTask( Beacon() )
+        self.taskScheduler.addTask( self.controller1 )
         
         self.commands = {
             "info": self.cmdInfo,
@@ -50,9 +57,7 @@ class mainFunc:
             LogPrinter ( "Unknown command: ", command )
             LogPrinter ( "Supported commands:" )
             for key in self.commands.keys(): 
-                LogPrinter ( "- ", key )
-                
-            
+                LogPrinter ( "- ", key )                            
 
     def run(self): 
         LogPrinter ( "Running loop" )
@@ -68,6 +73,14 @@ class mainFunc:
     def cmdSimpleMove(self):
         LogPrinter ( "Doing a simple move" ); 
         self.driver1.setMotorPWM(0.25)                
+        
+        def stopFun():
+            self.driver1.setMotorPWM(0)            
+            LogPrinter ( "Done with simple move" );         
+        self.taskScheduler.addTask( IFutureTask(int(2e6),stopFun,self.taskScheduler) )
+
+    def cmdMoveAtConstantSpeed(self):
+        LogPrinter ( "Moving at constant speed" );                 
         
         def stopFun():
             self.driver1.setMotorPWM(0)            

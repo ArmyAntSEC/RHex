@@ -1,5 +1,5 @@
 import time
-import warnings
+
 
 
 def _clamp(value, limits):
@@ -13,13 +13,8 @@ def _clamp(value, limits):
     return value
 
 
-try:
-    # Get monotonic time to ensure that time deltas are always positive
-    _current_time = time.monotonic # type: ignore
-except AttributeError:
-    # time.monotonic() not available (using python < 3.3), fallback to time.time()
-    _current_time = time.time
-    warnings.warn('time.monotonic() not available in python < 3.3, using time.time() as fallback')
+_current_time = time.time
+    
 
 
 class PID(object):

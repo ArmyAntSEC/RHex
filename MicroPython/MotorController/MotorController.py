@@ -9,12 +9,25 @@ class MotorController ( IRecurringTask ):
         self.motorDriver = motorDriver
         self.homingEncoder = homingEncoder
         self.pid = PID()
+        self.pid.auto_mode = False
+        self.enabled = False
         
     def setPoint( self, setPoint ):
         self.pid.setpoint = setPoint
     
-    def run( self ):        
-        motorPWM = self.pid( self.homingEncoder.position )
-        self.motorDriver.setMotorPWM( motorPWM )
+    def enable(self):
+        self.pid.auto_mode = True
+        self.enabled = True
+    
+    def disable(self):
+        self.pid.auto_mode = True
+        self.enabled = False
+    
+    def run( self ):  
+        if ( self.enabled ):      
+            motorPWM = self.pid( self.homingEncoder.position )
+            if ( motorPWM is None ):
+                motorPWM = 0
+            self.motorDriver.setMotorPWM( motorPWM )
 
 
