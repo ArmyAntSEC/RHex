@@ -1,0 +1,3 @@
+[submodule "rshell"]
+	path = rshell
+	url = git@github.com:ArmyAntSEC/rshell.git
