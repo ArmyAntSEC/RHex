@@ -27,8 +27,9 @@ class TackScheduler:
                 task.run()
 
     def printStats(self):    
-        print ( "Mean time between calls: ", self.intervalMean/1000, " ms." )
-        print ( "Standard deviation of time between calls: ", 
-            sqrt( (self.intervalMeanSq/self.callCount - 
-            self.intervalMean*self.intervalMean / (self.callCount * self.callCount ) ) ) / 1000,
-            " ms." )
+        print ( "Mean time between calls: ", "{:.2f}".format( self.intervalMean/1000 ), 
+            " ms. (Should be ~0.2 ms)" )
+        print ( "Standard deviation of time between calls in percent: ", 
+            "{:.2f}".format( 100* sqrt( (self.intervalMeanSq/self.callCount - 
+            self.intervalMean*self.intervalMean / (self.callCount * self.callCount ) ) ) / self.intervalMean ),
+            " %. (Should be ~1%)" )

@@ -20,32 +20,28 @@ class mainFunc:
 
         self.taskScheduler = TackScheduler()   
         
+        self.commands = {
+            "info": self.cmdInfo,
+            "simpleMove": self.cmdSimpleMove,
+            "stats": self.cmdStats,
+            "exit": self.cmdExit            
+        }
+
         # Start the infitine loop
         self.run()
 
 
     def commandParser( self, command: str ):
         """Parses a single input command. Should return immediately"""
-
-        if ( command == "info" ):        
-            print ( "This is the info" )
-
-        elif ( command == "simpleMove" ):
-            print ( "Doing a simple move" ); 
-            self.driver1.setMotorPWM(0.5)
-            #sleep(1)
-            self.driver1.setMotorPWM(0)            
-            print ( "Done with simple move" ); 
-        
-        elif ( command == "stats" ):
-            self.taskScheduler.printStats()
-
-        elif ( command == "exit" ):
-            # Exit the program
-            exit()
+        if  ( command in self.commands ):
+            self.commands[command]()
         else:
             print ( "Unknown command: ", command )
-
+            print ( "Supported commands:" )
+            for key in self.commands.keys(): 
+                print ( "- ", key )
+                
+            
 
     def run(self): 
         print ( "Running loop" )
@@ -55,5 +51,20 @@ class mainFunc:
             reader()
             self.taskScheduler.run()            
 
+    def cmdInfo(self):
+        print ( "This is the info" )
+    
+    def cmdSimpleMove(self):
+        print ( "Doing a simple move" ); 
+        self.driver1.setMotorPWM(0.5)
+        utime.sleep(1) #NOT ALLOWED. MUST RETURN IMMEDIATELY
+        self.driver1.setMotorPWM(0)            
+        print ( "Done with simple move" ); 
+
+    def cmdStats(self):
+        self.taskScheduler.printStats()
+
+    def cmdExit(self):
+        exit()
 
 mainFunc()

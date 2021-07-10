@@ -12,8 +12,7 @@ class NonBlockingRead:
             self.buffer = self.buffer + str(sys.stdin.read(1))                        
             if ( self.buffer[-1] == '\n' ):
                 
-                # Parse the command
-                print ( "Running command: ", self.buffer.strip() )
+                # Parse the command                
                 self.commandParser ( self.buffer.strip() )
 
                 # Clear the buffer
