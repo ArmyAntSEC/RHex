@@ -1,14 +1,14 @@
 import utime
+from LogPrinter import LogPrinter
 
 class IRecurringTask:
     def __init__(self, period_us: int ):
         self.period_us = period_us
         self.init()
 
-    def init(self ):
+    def init(self):        
         thisTime_us = utime.ticks_us()
         self.nextTime_us = utime.ticks_add( thisTime_us, self.period_us )
-        print ( "This time: ", thisTime_us, " nextTime: ", self.nextTime_us )
 
     def canRun( self ):
         thisTime_us = utime.ticks_us()
@@ -20,5 +20,5 @@ class IRecurringTask:
             return False
 
     def run( self ):
-        print ( "IRecurringTask needs to be inherited and the run() shall be overridden." )
+        LogPrinter ( "IRecurringTask needs to be inherited and the run() shall be overridden." )
             

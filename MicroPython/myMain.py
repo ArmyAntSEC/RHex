@@ -7,14 +7,18 @@ from TaskScheduler.TaskScheduler import TackScheduler
 from TaskScheduler.IRecurringTask import IRecurringTask
 from TaskScheduler.IFutureTask import IFutureTask
 from NonBlockingRead import NonBlockingRead
+from LogPrinter import LogPrinter
 
 class Beacon(IRecurringTask):
+    def __init__(self):
+        IRecurringTask.__init__(self, 10000000)
+
     def run( self ):
-        print ( "Time: " , utime.ticks_us() )
+        LogPrinter ( "Beacon!" )
 
 class mainFunc:
     def __init__( self ):
-        print ( "Hello Again World!" )    
+        LogPrinter ( "Hello Again World!" )    
             
         m1ena = Pin(3, Pin.OUT )
         m1enb = Pin(4, Pin.OUT )
@@ -25,7 +29,7 @@ class mainFunc:
         self.driver1.config ( m1ena, m1enb, m1pwm )
 
         self.taskScheduler = TackScheduler()   
-        self.taskScheduler.addTask( Beacon(1000000) )
+        self.taskScheduler.addTask( Beacon() )
         
         self.commands = {
             "info": self.cmdInfo,
@@ -43,15 +47,15 @@ class mainFunc:
         if  ( command in self.commands ):
             self.commands[command]()
         else:
-            print ( "Unknown command: ", command )
-            print ( "Supported commands:" )
+            LogPrinter ( "Unknown command: ", command )
+            LogPrinter ( "Supported commands:" )
             for key in self.commands.keys(): 
-                print ( "- ", key )
+                LogPrinter ( "- ", key )
                 
             
 
     def run(self): 
-        print ( "Running loop" )
+        LogPrinter ( "Running loop" )
         reader = NonBlockingRead( self.commandParser )
 
         while True:        
@@ -59,16 +63,16 @@ class mainFunc:
             self.taskScheduler.run()            
 
     def cmdInfo(self):
-        print ( "This is the info" )
+        LogPrinter ( "This is the info" )
     
     def cmdSimpleMove(self):
-        print ( "Doing a simple move" ); 
+        LogPrinter ( "Doing a simple move" ); 
         self.driver1.setMotorPWM(0.5)                
         
         def stopFun():
             self.driver1.setMotorPWM(0)            
-            print ( "Done with simple move" );         
-        self.taskScheduler.addTask( IFutureTask(1000,stopFun,self.taskScheduler) )
+            LogPrinter ( "Done with simple move" );         
+        self.taskScheduler.addTask( IFutureTask(int(2e6),stopFun,self.taskScheduler) )
 
     def cmdStats(self):
         self.taskScheduler.printStats()
