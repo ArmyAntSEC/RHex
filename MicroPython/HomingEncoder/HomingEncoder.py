@@ -8,7 +8,7 @@ class HomingEncoder(IRecurringTask):
         self.position = int(0)
         self.lastPosition = int(0)
         self.lastTime_us = utime.ticks_us()
-        self.speed_cps = 0
+        self.speed_cps = 0        
         self.isHomed = False
 
     def config( self, encoder1: int, encoder2: int, homing: int ):
@@ -45,7 +45,7 @@ class HomingEncoder(IRecurringTask):
         timeDelta_s = timeDelta_us / 1e6
 
         # Compute the speed
-        self.speed_cps = posDelta / timeDelta_s
+        self.speed_cps = (self.speed_cps * 2 + posDelta / timeDelta_s)/3
 
         #Store the time and pos when the last measurement was made
         self.lastPosition = thisPos

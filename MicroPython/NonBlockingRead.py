@@ -8,8 +8,11 @@ class NonBlockingRead:
         self.buffer = ""
     
     def __call__(self):             
-        if ( self.spoll.poll(0) ):                        
-            self.buffer = self.buffer + str(sys.stdin.read(1))                        
+        if ( self.spoll.poll(0) ):      
+            thisData = str(sys.stdin.read(1))                  
+            self.buffer = self.buffer + thisData
+            print ( thisData, end='')
+
             if ( self.buffer[-1] == '\n' ):
                 
                 # Parse the command                

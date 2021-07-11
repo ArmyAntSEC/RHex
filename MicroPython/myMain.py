@@ -44,7 +44,7 @@ class mainFunc:
         
         self.commands = {
             "info": self.cmdInfo,
-            "simpleMove": self.cmdSimpleMove,
+            "move": self.cmdSimpleMove,
             "const": self.cmdMoveAtConstantSpeed,
             "stats": self.cmdStats,
             "exit": self.cmdExit            
@@ -82,6 +82,8 @@ class mainFunc:
     
     def cmdSimpleMove(self, args ):
         LogPrinter ( "Doing a simple move" ); 
+        self.homingEncoder1.forceHomed() # Force homing.
+
         power = 0.25
         if ( len(args) > 0 ):
             power = args[0]
@@ -90,18 +92,24 @@ class mainFunc:
         def stopFun():
             self.driver1.setMotorPWM(0)            
             LogPrinter ( "Done with simple move" );         
-        self.taskScheduler.addTask( IFutureTask(int(4e6),stopFun,self.taskScheduler) )
+            LogPrinter ( "Speed: ", self.homingEncoder1.speed_cps )
+        self.taskScheduler.addTask( IFutureTask(int(2e6),stopFun,self.taskScheduler) )
 
     def cmdMoveAtConstantSpeed(self, args):
         LogPrinter ( "Moving at constant speed" );                         
         speed = 2000
-        if ( len(args) > 0 ):
+        Kp = 0.0003
+        Ki = 0
+        if ( len(args) >= 3 ):
             speed = args[0]
+            Kp = args[1]
+            Ki = args[2]
 
+        self.homingEncoder1.forceHomed() # Force homing.
+        self.controller1.setParams(Kp, Ki)
         self.controller1.setPoint(speed)
         self.controller1.enable()
-        # Force homing.
-        self.homingEncoder1.forceHomed()
+        
 
         LogPrinter( "Speed setpoint: ", speed )
 

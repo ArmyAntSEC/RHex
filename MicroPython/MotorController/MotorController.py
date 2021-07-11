@@ -7,14 +7,17 @@ from NumericOutput import NumericOutput
 
 class MotorController ( IRecurringTask ):
     def config(self, motorDriver: MotorDriver, homingEncoder: HomingEncoder, 
-        P: float ):
+        Kp: float ):
         self.motorDriver = motorDriver
         self.homingEncoder = homingEncoder
-        self.pid = PID(Kp=P)        
+        self.pid = PID(Kp=Kp)        
         self.enabled = False
         self.output = NumericOutput("controller")
-        self.output.printHeaders( ("speed", "error", "motorPWM") )
+        self.output.printHeaders( ("speed", "error", "Iterm", "motorPWM", "Position") )
         
+    def setParams ( self, Kp, Ki ):
+        self.pid.setParams( Kp, Ki )
+
     def setPoint( self, setPoint ):
         self.pid.setPoint = setPoint
     
@@ -30,6 +33,7 @@ class MotorController ( IRecurringTask ):
             if ( motorPWM is None ):
                 motorPWM = 0
             self.motorDriver.setMotorPWM( motorPWM )
-            self.output( (self.homingEncoder.speed_cps, self.pid.error, motorPWM) )
+            self.output( (self.homingEncoder.speed_cps, self.pid.error, 
+                self.pid.ITerm, motorPWM, self.homingEncoder.position) )
 
 
