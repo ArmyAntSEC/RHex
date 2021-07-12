@@ -1,6 +1,7 @@
 from machine import Pin
 import utime
 from TaskScheduler.IRecurringTask import IRecurringTask
+from NumericOutput import NumericOutput
 
 class HomingEncoder(IRecurringTask):
     def __init__(self, period_us: int):
@@ -10,6 +11,9 @@ class HomingEncoder(IRecurringTask):
         self.lastTime_us = utime.ticks_us()
         self.speed_cps = 0        
         self.isHomed = False
+        self.verbose = False
+        self.output = NumericOutput("encoder")
+        self.output.printHeaders( ("speed", "Position", "TimeDelta") )
 
     def config( self, encoder1: int, encoder2: int, homing: int ):
         self.encoder1 = Pin(encoder1, Pin.IN )
@@ -22,8 +26,7 @@ class HomingEncoder(IRecurringTask):
     def encoderHandler(self, pin: Pin):
         self.position = self.position + 1        
 
-    def homingHandler(self, pin: Pin):
-        print ( "Homing: ", self.isHomed, " Postion: ", self.position, " Speed: ", self.speed_cps  )        
+    def homingHandler(self, pin: Pin):        
         if ( not self.isHomed ):        
             self.isHomed = True    
             self.position = 0        
@@ -50,4 +53,8 @@ class HomingEncoder(IRecurringTask):
         #Store the time and pos when the last measurement was made
         self.lastPosition = thisPos
         self.lastTime_us = thisTime_us
+
+        if ( self.verbose ):
+            self.output( (self.speed_cps, self.position, timeDelta_us) )
+            
         
