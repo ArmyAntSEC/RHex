@@ -10,6 +10,7 @@ from TaskScheduler.IFutureTask import IFutureTask
 from NonBlockingRead import NonBlockingRead
 from LogPrinter import LogPrinter
 from NumericOutput import NumericOutput
+import utime
 
 class Beacon(IRecurringTask):
     def __init__(self):
@@ -17,6 +18,14 @@ class Beacon(IRecurringTask):
 
     def run( self ):
         LogPrinter ( "Beacon!" )
+
+class FastBeacon(IRecurringTask):
+    def __init__(self):
+        IRecurringTask.__init__(self, 100000)
+        self.startTime = utime.ticks_ms()
+
+    def run( self ):
+        print ( "#beacon", (utime.ticks_diff( utime.ticks_ms(), self.startTime),) )
 
 class mainFunc:
     def __init__( self ):                    
@@ -38,9 +47,10 @@ class mainFunc:
         self.controller1.config( self.driver1, self.homingEncoder1, 0.0003 )
         
         self.taskScheduler = TackScheduler()   
-        self.taskScheduler.addTask( Beacon() )
-        self.taskScheduler.addTask( self.controller1 )
-        self.taskScheduler.addTask( self.homingEncoder1 )
+        #self.taskScheduler.addTask( Beacon() )
+        self.taskScheduler.addTask( FastBeacon() )
+        #self.taskScheduler.addTask( self.controller1 )
+        #self.taskScheduler.addTask( self.homingEncoder1 )
         
         self.commands = {
             "info": self.cmdInfo,
