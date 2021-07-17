@@ -13,9 +13,9 @@ class TackScheduler:
 
     def addTask( self, task: IRecurringTask ):
         self.tasks.append( task )
-    
-    def deleteTask( self, task: IRecurringTask ):
-        self.tasks.remove( task )
+
+    # def deleteTask( self, task: IRecurringTask ):
+    #     self.tasks.remove( task )
 
     def run(self):
         # Compute the call frequency statistics
@@ -27,14 +27,14 @@ class TackScheduler:
         self.callCount = self.callCount + 1
 
         for task in self.tasks:
-            if ( task.canRun() ):                
+            if ( task.canRun() ):
                 task.run()
-        
 
-    def printStats(self):    
-        LogPrinter ( "Mean time between calls: ", "{:.2f}".format( self.intervalMean/1000 ), 
-            " ms. (Should be ~0.2 ms)" )
-        LogPrinter ( "Standard deviation of time between calls in percent: ", 
-            "{:.2f}".format( 100* sqrt( (self.intervalMeanSq/self.callCount - 
-            self.intervalMean*self.intervalMean / (self.callCount * self.callCount ) ) ) / self.intervalMean ),
-            " %. (Should be ~1%)" )
+
+    # def printStats(self):
+    #     LogPrinter ( "Mean time between calls: ", "{:.2f}".format( self.intervalMean/1000 ),
+    #         " ms. (Should be ~0.2 ms)" )
+    #     LogPrinter ( "Standard deviation of time between calls in percent: ",
+    #         "{:.2f}".format( 100* sqrt( (self.intervalMeanSq/self.callCount -
+    #         self.intervalMean*self.intervalMean / (self.callCount * self.callCount ) ) ) / self.intervalMean ),
+    #         " %. (Should be ~1%)" )
